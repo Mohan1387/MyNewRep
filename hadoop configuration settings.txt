@@ -1,0 +1,290 @@
+--------Core-site.xml-----------------
+
+<configuration>
+<property>
+<name>fs.defaultFS</name>
+<value>hdfs://master:54310</value>
+</property>
+
+<property>
+<name>io.native.lib.available</name>
+<value>true</value>
+</property>
+
+<property>
+<name>io.compression.codecs</name>
+<value>org.apache.hadoop.io.compress.SnappyCodec</value>
+</property>
+
+<property>
+<name>io.compression.codec.bzip2.library</name>
+<value>system-native</value>
+</property>
+
+<property>
+<name>fs.trash.interval</name>
+<value>120</value>
+</property>
+
+<property>
+<name>fs.trash.checkpoint.interval</name>
+<value>60</value>
+</property>
+
+<property>
+  <name>hadoop.proxyuser.hue.hosts</name>
+  <value>*</value>
+</property>
+<property>
+  <name>hadoop.proxyuser.hue.groups</name>
+  <value>*</value>
+</property>
+
+</configuration>
+
+
+-------------hdfs-site.xml-----------------------------
+
+<configuration>
+<property>
+<name>dfs.webhdfs.enabled</name>
+<value>true</value>
+</property>
+<property>
+<name>dfs.replication</name>
+<value>3</value>
+</property>
+<property>
+<name>dfs.namenode.name.dir</name>
+<value>file:/usr/local/hadoop/data/hdfs/namenode</value>
+</property>
+<property>
+<name>dfs.datanode.data.dir</name>
+<value>file:/usr/local/hadoop/data/hdfs/datanode</value>
+</property>
+<property>
+<name>dfs.namenode.checkpoint.dir</name>
+<value>file:/usr/local/hadoop/data/hdfs/namesecondary</value>
+</property>
+<property>
+<name>dfs.namenode.http-address</name>
+<value>master:50070</value>
+<description>Enter your NameNode hostname for http access.</description>
+</property>
+
+<property>
+<name>dfs.namenode.secondary.http-address</name>
+<value>master:50090</value>
+<description>Enter your Secondary NameNode hostname.</description>
+</property>
+<property>
+<name>dfs.namenode.backup.address</name>
+<value>master:50100</value>
+</property>
+<property>
+<name>dfs.namenode.backup.http-address</name>
+<value>master:50105</value>
+</property>
+
+</configuration>
+
+
+--------------mapred-site.xml-----------------
+
+<property>
+<name>mapreduce.framework.name</name>
+<value>yarn</value>
+</property>
+
+<!-- only use it when heap size needs to be increased
+<property>
+<name>mapred.child.java.opts</name>
+<value>-Xmx400m</value>
+</property>
+-->
+
+<property>
+<name>mapreduce.jobhistory.address</name>
+<value>master:10020</value>
+</property>
+<property>
+<name>mapreduce.jobhistory.webapp.address</name>
+<value>master:19888</value>
+</property>
+<property>
+<name>mapreduce.jobhistory.intermediate-done-dir</name>
+<value>/usr/local/hadoop/logs/mr-history/tmp</value>
+</property>
+<property>
+<name>mapreduce.jobhistory.done-dir</name>
+<value>/usr/local/hadoop/logs/mr-history/done</value>
+</property>
+
+<!--
+<property>
+<name>mapred.system.dir</name>
+<value>/usr/local/hadoop/data/hdfs/mapred/system</value>
+<final>true</final>
+</property>
+<property>
+<name>mapred.local.dir</name>
+<value>/usr/local/hadoop/data/hdfs/mapred/local</value>
+<final>true</final>
+</property>
+<property>
+<name>yarn.app.mapreduce.am.staging-dir</name>
+<value>/user/app</value>
+</property>
+-->
+
+
+---------------yarn-site.xml-----------Master------------------
+
+<!-- <property>
+  <name>yarn.nodemanager.resource.memory-mb</name>
+  <value>30000</value>
+  <description>Amount of physical memory, in MB, that can be allocated for containers.</description>
+</property>
+<property>
+  <name>yarn.scheduler.minimum-allocation-mb</name>
+  <value>9000</value>
+</property>
+<property>
+<name>yarn.log-aggregation-enable</name>
+<value>true</value>
+</property>
+-->
+<property>
+    <name>yarn.nodemanager.pmem-check-enabled</name>
+    <value>false</value>
+</property>
+
+<property>
+    <name>yarn.nodemanager.vmem-check-enabled</name>
+    <value>false</value>
+</property>
+<property>
+<name>yarn.resourcemanager.hostname</name>
+<value>master</value>
+</property>
+<property>
+<name>yarn.nodemanager.aux-services</name>
+<value>mapreduce_shuffle</value>
+</property>
+<property>
+<name>yarn.nodemanger.aux-services.mapreduce.shuffle.class</name>
+<value>org.apache.hadoop.mapred.ShuffleHandler</value>
+</property>
+<property>
+<name>yarn.resourcemanager.resource-tracker.address</name>
+<value>master:8031</value>
+</property>
+<property>
+<name>yarn.resourcemanager.scheduler.address</name>
+<value>master:8030</value>
+</property>
+<property>
+<name>yarn.resourcemanager.address</name>
+<value>master:8050</value>
+</property>
+
+<!--for Snappy Compression -->
+<property>
+  <name>mapreduce.output.compress</name>
+  <value>true</value>
+</property>
+<property>
+  <name>mapred.output.compress.codec</name>
+  <value>org.apache.hadoop.io.compress.SnappyCodec</value>
+</property>
+<property>
+  <name>mapreduce.output.fileoutputformat.compress</name>
+  <value>true</value>
+</property>
+<property>
+  <name>mapreduce.output.fileoutputformat.compress.codec</name>
+  <value>org.apache.hadoop.io.compress.SnappyCodec</value>
+</property>
+
+</configuration>
+
+------------------------yarn-site.xml-----slave----------------------
+
+<property>
+  <name>yarn.nodemanager.localizer.address</name>
+  <value>slave1:8040</value>
+</property>
+<!--
+<property>
+  <name>yarn.nodemanager.resource.memory-mb</name>
+  <value>9000</value>
+  <description>Amount of physical memory, in MB, that can be allocated for containers.</description>
+</property>
+<property>
+  <name>yarn.scheduler.minimum-allocation-mb</name>
+  <value>9000</value>
+</property>
+-->
+
+<property>
+    <name>yarn.nodemanager.pmem-check-enabled</name>
+    <value>false</value>
+</property>
+
+<property>
+    <name>yarn.nodemanager.vmem-check-enabled</name>
+    <value>false</value>
+</property>
+
+<property>
+<name>yarn.nodemanager.webapp.address</name>
+<value>slave1:8042</value>
+</property>
+<property>
+<name>yarn.nodemanager.address</name>
+<value>slave1:0</value>
+</property>
+
+<property>
+<name>yarn.resourcemanager.hostname</name>
+<value>master</value>
+</property>
+<property>
+<name>yarn.nodemanager.aux-services</name>
+<value>mapreduce_shuffle</value>
+</property>
+<property>
+<name>yarn.nodemanger.aux-services.mapreduce.shuffle.class</name>
+<value>org.apache.hadoop.mapred.ShuffleHandler</value>
+</property>
+<property>
+<name>yarn.resourcemanager.resource-tracker.address</name>
+<value>master:8031</value>
+</property>
+<property>
+<name>yarn.resourcemanager.scheduler.address</name>
+<value>master:8030</value>
+</property>
+<property>
+<name>yarn.resourcemanager.address</name>
+<value>master:8050</value>
+</property>
+
+<!--for Snappy Compression -->
+<property>
+  <name>mapreduce.output.compress</name>
+  <value>true</value>
+</property>
+<property>
+  <name>mapred.output.compress.codec</name>
+  <value>org.apache.hadoop.io.compress.SnappyCodec</value>
+</property>
+<property>
+  <name>mapreduce.output.fileoutputformat.compress</name>
+  <value>true</value>
+</property>
+<property>
+  <name>mapreduce.output.fileoutputformat.compress.codec</name>
+  <value>org.apache.hadoop.io.compress.SnappyCodec</value>
+</property>
+

@@ -1,0 +1,4 @@
+CREATE TABLE logs (foo INT, bar STRING, created_date TIMESTAMP)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.contrib.serde2.MultiDelimitSerDe' 
+WITH SERDEPROPERTIES ("field.delim"="<=>")
+STORED AS TEXTFILE;

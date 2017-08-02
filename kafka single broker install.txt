@@ -1,0 +1,51 @@
+kafka installation
+
+wget "http://www-eu.apache.org/dist/kafka/0.10.2.1/kafka_2.11-0.10.2.1.tgz"
+
+tar -xzf kafka_2.11-0.10.2.1.tgz
+
+su root
+
+mv kafka_2.11-0.10.2.1 /usr/local/kafka
+
+chown -R hduser:hadoop /usr/local/kafka
+
+exit root
+
+nohup bin/zookeeper-server-start.sh config/zookeeper.properties &
+
+nohup bin/kafka-server-start.sh config/server.properties & 
+
+jps
+
+kafka
+
+create topic:
+
+bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic newtopic
+
+
+Procuder:
+
+bin/kafka-console-producer.sh --broker-list localhost:9092 --topic newtopic
+
+
+Consumer:
+
+bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic newtopic --from-beginning
+
+
+--------------- this below setup is working but crashing after some time----------------
+
+
+bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic mytopictest
+
+
+nc -l 2552 | .bin/kafka-console-producer.sh --broker-list localhost:9092 --topic mytopictest
+
+
+bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic mytopictest --from-beginning
+
+
+bin/kafka-topics.sh --zookeeper localhost:2181 --delete --topic mytopictest
+

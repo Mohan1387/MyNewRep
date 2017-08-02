@@ -1,0 +1,52 @@
+import org.apache.spark.sql.hive.HiveContext
+import org.apache.spark.sql.SQLContext
+
+
+val hiveObj = new HiveContext(sc)
+
+hiveObj.refreshTable("usecase_twodb.user_outbytes_above_threshold")
+
+val user_outbytes = spark.sqlContext.sql("select * from usecase_twodb.user_outbytes_above_threshold").collect()
+
+import spark.implicits._
+val df = user_outbytes.toDF
+
+
+val sqlContext = new org.apache.spark.sql.hive.HiveContext(sc)
+
+val result = sqlContext.sql("select * from usecase_twodb.user_outbytes_above_threshold")
+
+
+
+rm /usr/local/hadoop/lib/native/libhadoop.so.1.0.0
+mv setups/libhadoop.so.1.0.0 /usr/local/hadoop/lib/native
+ls -lrth /usr/local/hadoop/lib/native
+
+
+libhadoop.so -> libhadoop.so.1.0.0
+
+--conf spark.executor.memory=4g
+
+spark-sql --conf spark.executor.memory=4g --conf spark.executor.cores=2 --conf spark.driver.extraClassPath=/usr/local/hadoop/share/hadoop/common/lib/snappy-java-1.0.4.1.jar --conf spark.executor.extraLibraryPath=/usr/local/hadoop/lib/native --conf spark.executor.extraJavaOptions -Djava.library.path="-Djava.library.path=$HADOOP_HOME/lib/native" --master yarn
+
+spark-sql --conf spark.executor.memory=4g --conf spark.executor.cores=2 --conf spark.driver.extraClassPath=/usr/local/hadoop/share/hadoop/common/lib/snappy-java-1.0.4.1.jar --conf spark.executor.extraLibraryPath=/usr/local/hadoop/lib/native --master yarn -deploy-mode cluster
+
+spark.executor.extraClassPath /usr/hdp/current/hadoop-client/lib/snappy-java-*.jar 
+spark.executor.extraLibraryPath /usr/hdp/current/hadoop-client/native 
+spark.executor.extraJavaOptions -Djava.library.path=/usr/hdp/current/hadoop-client/lib/native/lib
+
+
+spark.executor.memory=6g
+spark.executor.cores=2 
+spark.driver.extraClassPath=/usr/local/hadoop/share/hadoop/common/lib/snappy-java-1.0.4.1.jar
+spark.executor.extraLibraryPath=/usr/local/hadoop/lib/native
+
+
+spark-sql --master yarn -deploy-mode cluster --driver-cores 2  --num-executors 16
+
+
+------working conf---
+
+spark-sql --conf spark.executor.memory=4g --conf spark.executor.cores=2 --conf spark.driver.extraClassPath=/usr/local/hadoop/share/hadoop/common/lib/snappy-java-1.0.4.1.jar --conf spark.executor.extraLibraryPath=/usr/local/hadoop/lib/native --master yarn -deploy-mode cluster
+
+-----------------------------------------------------

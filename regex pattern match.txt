@@ -1,0 +1,50 @@
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.RegexSerDe' 
+WITH SERDEPROPERTIES ('input.regex'="\"(.*)\"\&&&\"(.*)\"")
+
+drop table threatpatterns;
+SET hive.exec.compress.output=true;
+SET mapred.output.compression.codec=org.apache.hadoop.io.compress.SnappyCodec;
+SET mapred.output.compression.type=BLOCK;
+
+CREATE EXTERNAL TABLE threatpatterns
+(Pattern STRING)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ''
+LOCATION '/user/hdfs/regex_pattern/pattern'
+tblproperties ("skip.header.line.count"="1");
+
+select * from threatpatterns;
+
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '\054'
+ESCAPED BY '"'
+SERDE 'org.apache.hadoop.hive.contrib.serde2.MultiDelimitSerDe' 
+WITH SERDEPROPERTIES ("field.delim"="&&&")
+ESCAPED BY '"'
+
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
+WITH SERDEPROPERTIES (
+   "separatorChar" = ","
+)  
+LOCATION '/user/hdfs/regex_pattern/threatpattern'
+tblproperties ("skip.header.line.count"="1");
+
+
+
+select substr(end_date,1,10) as eventdate,end_time,request_url_file_name 
+from proxy where dir > '20170320' and request_url_file_name RLIKE 'sitey\.me' limit 10;
+
+
+SET spark.sql.parquet.compression.codec=snappy;
+
+create table patter_search_one
+STORED AS PARQUET
+TBLPROPERTIES ('PARQUET.COMPRESS'='SNAPPY') as
+select a.* from masterlogdb.proxy a, threatpatterns b
+where a.request_url_file_name RLIKE b.pattern;
+limit 20;
+
+
+
+select * from masterlogdb.proxy where request_url_file_name RLIKE "<script>alert\(xss\)</script>";
+
+

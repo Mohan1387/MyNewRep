@@ -1,0 +1,53 @@
+SET hive.exec.compress.output=true;
+SET mapred.output.compression.codec=org.apache.hadoop.io.compress.SnappyCodec;
+SET mapred.output.compression.type=BLOCK;
+
+create external table malurl(urlname string)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
+WITH SERDEPROPERTIES (
+   "separatorChar" = ",",
+   "quoteChar"     = "\""
+)  
+LOCATION '/user/hdfs/maldomain';
+
+
+SET hive.exec.compress.output=true;
+SET mapred.output.compression.codec=org.apache.hadoop.io.compress.SnappyCodec;
+SET mapred.output.compression.type=BLOCK;
+
+create table malurl_bytes as
+select substr(a.end_date,1,10) as eventdate,substr(a.end_time,1,2) as eventtime, a.destination_host_name,sum(a.bytes_out) as bytes from proxy a join malurl b
+on a.destination_host_name = b.urlname and
+a.request_method in ('PUT','POST') 
+group by substr(a.end_date,1,10),substr(a.end_time,1,2),a.destination_host_name limit 10;
+
+
+
+SET hive.exec.compress.output=true;
+SET mapred.output.compression.codec=org.apache.hadoop.io.compress.SnappyCodec;
+SET mapred.output.compression.type=BLOCK;
+
+create external table malip(ip string)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
+WITH SERDEPROPERTIES (
+   "separatorChar" = ",",
+   "quoteChar"     = "\""
+)  
+LOCATION '/user/hdfs/malip';
+
+SET hive.exec.compress.output=true;
+SET mapred.output.compression.codec=org.apache.hadoop.io.compress.SnappyCodec;
+SET mapred.output.compression.type=BLOCK;
+
+create table malip_bytes as
+select substr(a.end_date,1,10) as eventdate,substr(a.end_time,1,2) as eventtime, a.target_address,sum(a.bytes_out) as bytes from proxy a join malip b
+on a.target_address = b.ip and
+a.request_method in ('PUT','POST') 
+group by substr(a.end_date,1,10),substr(a.end_time,1,2),a.target_address;
+
+
+
+
+
+
+hive -e "set hive.cli.print.header=true; select * from masterlogdb.proxy where target_address = " > Datapool/Exfilter/$folder/$evdateval"_Exfilteration".tsv

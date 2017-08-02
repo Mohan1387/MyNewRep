@@ -1,0 +1,27 @@
+spark-sql --master yarn -deploy-mode cluster --driver-cores 2  --num-executors 32
+
+
+
+SET spark.sql.parquet.compression.codec=snappy;
+
+create table destination_host_user_20170711
+STORED AS PARQUET
+TBLPROPERTIES ('PARQUET.COMPRESS'='SNAPPY') as
+select distinct destination_host_name,attacker_username from masterlogdb.proxy where attacker_username = 'rocky.balboa'
+union
+select distinct destination_host_name,attacker_username from masterlogdb.proxy where attacker_username = 'abu.safi'
+union
+select distinct destination_host_name,attacker_username from masterlogdb.proxy where attacker_username = 'Ali El Bidali'
+union
+select distinct destination_host_name,attacker_username from masterlogdb.proxy where attacker_username = 'dull5594';
+
+
+SET spark.sql.parquet.compression.codec=snappy;
+
+create table common_destination_host_20170711
+STORED AS PARQUET
+TBLPROPERTIES ('PARQUET.COMPRESS'='SNAPPY') as
+select a.destination_host_name from
+(select destination_host_name,count(attacker_username) as attacker_count from destination_host_user_20170711
+group by destination_host_name) a
+where a.attacker_count >'1';
